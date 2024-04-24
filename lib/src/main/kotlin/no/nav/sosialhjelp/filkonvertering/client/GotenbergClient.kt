@@ -12,16 +12,24 @@ import io.ktor.http.contentType
 import io.ktor.http.headers
 import io.ktor.http.isSuccess
 import no.nav.sosialhjelp.filkonvertering.exception.FileConversionException
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 
+private const val LIBRE_OFFICE_ROUTE = "/forms/libreoffice/convert"
+
 @Component
-class GotenbergClient(private val httpClient: HttpClient) {
+@ConditionalOnProperty("GOTENBERG_URL")
+class GotenbergClient(
+    private val httpClient: HttpClient,
+    @Value("\${fil-konvertering_url}") private val gotenbergUrl: String,
+) {
     suspend fun convertToPdf(
         filename: String,
         bytes: ByteArray,
     ): ByteArray {
         val response =
-            httpClient.post("http://localhost:3000/forms/libreoffice/convert") {
+            httpClient.post(gotenbergUrl + LIBRE_OFFICE_ROUTE) {
                 headers {
                     append("Content-Disposition", "attachment; filename=\"$filename\"")
                 }

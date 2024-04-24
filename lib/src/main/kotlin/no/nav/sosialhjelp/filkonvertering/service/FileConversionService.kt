@@ -9,6 +9,7 @@ import no.nav.sosialhjelp.filkonvertering.client.GotenbergClient
 import no.nav.sosialhjelp.filkonvertering.exception.FileConversionException
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
@@ -18,6 +19,7 @@ private const val TAG_FILE_EXTENSION = "file_extension"
 private const val TAG_ERROR_CLASS = "error_class"
 
 @Component
+@ConditionalOnBean(GotenbergClient::class)
 class FileConversionService(
     private val gotenbergClient: GotenbergClient,
     private val meterRegistry: MeterRegistry,
