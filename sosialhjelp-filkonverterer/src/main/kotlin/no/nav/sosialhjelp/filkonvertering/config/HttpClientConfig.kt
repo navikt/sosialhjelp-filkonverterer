@@ -7,8 +7,5 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class HttpClientConfig {
-    @Bean
-    fun ktorClient(): HttpClient {
-        return HttpClient(CIO)
-    }
+
 }

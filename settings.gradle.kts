@@ -12,4 +12,4 @@ plugins {
 }
 
 rootProject.name = "sosialhjelp-filkonverterer"
-include("lib")
+include("sosialhjelp-filkonverterer")

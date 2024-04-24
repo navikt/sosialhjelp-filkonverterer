@@ -8,30 +8,30 @@ import kotlinx.coroutines.coroutineScope
 import no.nav.sosialhjelp.filkonvertering.client.GotenbergClient
 import no.nav.sosialhjelp.filkonvertering.exception.FileConversionException
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Component
 
 private const val TAG_TIKA_MIME_TYPE = "tika_mime_type"
 private const val TAG_CLIENT_MIME_TYPE = "client_mime_type"
 private const val TAG_FILE_EXTENSION = "file_extension"
 private const val TAG_ERROR_CLASS = "error_class"
 
-@Component
-@ConditionalOnBean(GotenbergClient::class)
-class FileConversionService(
+interface FileConversionService {
+    suspend fun convertFileToPdf(files: List<VedleggKonverteringOpplasting>): Map<VedleggKonverteringOpplasting, Result<ByteArray>>
+}
+
+class FileConversionServiceImpl(
     private val gotenbergClient: GotenbergClient,
     private val meterRegistry: MeterRegistry,
-    @Value("\${filkonvertering.metric.success.name:}") private val conversionSuccessMetricName: String?,
-    @Value("\${filkonvertering.metric.failure.name:}") private val conversionFailureMetricName: String?,
-) {
+    private val metricPrefix: String?,
+) : FileConversionService {
     private val log = LoggerFactory.getLogger(this::class.java)
 
-    private val pdfConversionSuccess = conversionSuccessMetricName?.let { Counter.builder(conversionSuccessMetricName) }
-    private val pdfConversionFailure = conversionFailureMetricName?.let { Counter.builder(conversionFailureMetricName) }
+    private val pdfConversionSuccess = metricPrefix?.let { Counter.builder("${metricPrefix}_pdf_conversion_success") }
+    private val pdfConversionFailure = metricPrefix?.let { Counter.builder("${metricPrefix}_pdf_conversion_failure") }
 
-    suspend fun convertFileToPdf(files: List<VedleggKonverteringOpplasting>): Map<VedleggKonverteringOpplasting, Result<ByteArray>> =
+    override suspend fun convertFileToPdf(
+        files: List<VedleggKonverteringOpplasting>,
+    ): Map<VedleggKonverteringOpplasting, Result<ByteArray>> =
         coroutineScope {
             log.info("Konverterer {} vedlegg til PDF", files.size)
 
