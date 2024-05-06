@@ -17,10 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio)
-
-    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.webflux)
     implementation(libs.spring.boot.autoconfigure)
     implementation(libs.spring.boot.starter.actuator)
 

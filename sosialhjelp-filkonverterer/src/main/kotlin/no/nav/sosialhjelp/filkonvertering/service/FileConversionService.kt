@@ -38,7 +38,11 @@ class FileConversionServiceImpl(
             files.associateWith { file ->
                 async(Dispatchers.IO) {
                     runCatching {
-                        gotenbergClient.convertToPdf(file.unconvertedName, file.bytes)
+                        gotenbergClient.convertToPdf(
+                            file.unconvertedName,
+                            file.mimeType,
+                            file.bytes,
+                        )
                     }.onSuccess { pdfBytes ->
                         if (pdfBytes.isEmpty()) {
                             throw FileConversionException(HttpStatus.BAD_REQUEST.value(), "Konvertert fil [$file] er tom.", "")

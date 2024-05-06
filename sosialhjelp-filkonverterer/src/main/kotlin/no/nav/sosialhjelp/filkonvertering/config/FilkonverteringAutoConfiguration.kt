@@ -1,7 +1,5 @@
 package no.nav.sosialhjelp.filkonvertering.config
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
 import io.micrometer.core.instrument.MeterRegistry
 import no.nav.sosialhjelp.filkonvertering.client.GotenbergClient
 import no.nav.sosialhjelp.filkonvertering.client.GotenbergClientImpl
@@ -17,6 +15,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
+import org.springframework.web.reactive.function.client.WebClient
 
 @SpringBootConfiguration
 @AutoConfigureAfter(MetricsAutoConfiguration::class)
@@ -30,7 +29,7 @@ class FilkonverteringAutoConfiguration(
     @ConditionalOnProperty("filkonvertering.gotenbergUrl")
     @ConditionalOnMissingBean
     fun gotenbergClient(): GotenbergClient {
-        return GotenbergClientImpl(HttpClient(CIO), filkonverteringProperties.gotenbergUrl)
+        return GotenbergClientImpl(WebClient.builder(), filkonverteringProperties.gotenbergUrl)
     }
 
     @Bean
