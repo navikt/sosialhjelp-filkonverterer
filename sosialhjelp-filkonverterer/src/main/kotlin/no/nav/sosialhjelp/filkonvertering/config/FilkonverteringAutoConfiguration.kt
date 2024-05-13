@@ -26,10 +26,18 @@ class FilkonverteringAutoConfiguration(
     private val meterRegistry: MeterRegistry,
 ) {
     @Bean
+    @ConditionalOnMissingBean
+    fun webClientBuilder(): WebClient.Builder {
+        return WebClient.builder().codecs {
+            it.defaultCodecs().maxInMemorySize(16 * 1024 * 1024)
+        }
+    }
+
+    @Bean
     @ConditionalOnProperty("filkonvertering.gotenbergUrl")
     @ConditionalOnMissingBean
-    fun gotenbergClient(): GotenbergClient {
-        return GotenbergClientImpl(WebClient.builder(), filkonverteringProperties.gotenbergUrl)
+    fun gotenbergClient(webClientBuilder: WebClient.Builder): GotenbergClient {
+        return GotenbergClientImpl(webClientBuilder, filkonverteringProperties.gotenbergUrl)
     }
 
     @Bean
